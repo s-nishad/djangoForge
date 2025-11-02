@@ -1,0 +1,33 @@
+name: 🚀 CI/CD Deploy Django via Docker Compose
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Deploy to remote server via SSH
+      - name: SSH and deploy Docker Compose
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}          # Your server IP
+          username: ${{ secrets.SERVER_USER }}      # Server username
+          key: ${{ secrets.SERVER_SSH_KEY }}        # Private SSH key
+          port: 22
+          script: |
+            cd /home/ubuntu/my-apps
+            git reset --hard
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
+            docker system prune -af
