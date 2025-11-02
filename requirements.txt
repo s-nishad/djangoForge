@@ -29,3 +29,8 @@ uritemplate==4.2.0
 urllib3==2.5.0
 gunicorn==23.0.0
 python-decouple==3.8
+
+# branch: redis-celery
+redis==7.0.1
+django-celery-results==2.6.0
+django-celery-beat==2.8.1

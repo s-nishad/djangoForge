@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Secret key for cryptographic signing (use a .env variable for production)
 SECRET_KEY = config('DJANGO_SECRET_KEY', 'fallback-secret-key')  # Fallback secret key for safety
-DEBUG = False  # Default to False, can be overridden in development/production
+DEBUG = config('DEBUG', 'True') == 'True'
 # run with set DJANGO_ENV=dev
 
 
@@ -59,6 +59,8 @@ INSTALLED_APPS += [
     'allauth',  # Django Allauth for authentication
     'allauth.account',  # Allauth account management
     'allauth.socialaccount',  # Social account authentication (Google, Facebook, etc.)
+    'django_celery_results',  # Celery results backend
+    'django_celery_beat',  # Celery periodic tasks
 ]
 
 # Local apps
