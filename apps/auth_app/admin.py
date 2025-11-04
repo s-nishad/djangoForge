@@ -11,10 +11,6 @@ from .models import User, UserRole
 # User Creation Form
 # ---------------------
 class UserCreationForm(forms.ModelForm):
-    """
-    A form for creating new users. Includes all required
-    fields, plus repeated password.
-    """
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
 
@@ -23,7 +19,6 @@ class UserCreationForm(forms.ModelForm):
         fields = ("email", "name", "phone_number", "profile_picture", "role")
 
     def clean_password2(self):
-        # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
@@ -31,7 +26,6 @@ class UserCreationForm(forms.ModelForm):
         return password2
 
     def save(self, commit=True):
-        # Save the password in hashed format
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
@@ -43,10 +37,6 @@ class UserCreationForm(forms.ModelForm):
 # User Change Form
 # ---------------------
 class UserChangeForm(forms.ModelForm):
-    """
-    A form for updating users. Includes all fields on
-    the user, but replaces the password field with admin's password hash display field.
-    """
     password = ReadOnlyPasswordHashField(label=("Password"))
 
     class Meta:
@@ -54,7 +44,6 @@ class UserChangeForm(forms.ModelForm):
         fields = ("email", "password", "name", "phone_number", "profile_picture", "role", "is_active", "is_staff", "is_superuser")
 
     def clean_password(self):
-        # Regardless of what the user provides, return the initial value.
         return self.initial["password"]
 
 
@@ -71,6 +60,7 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ("email", "name", "phone_number")
     ordering = ("email",)
     filter_horizontal = ("groups", "user_permissions",)
+    readonly_fields = ("last_login", "date_joined")
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),

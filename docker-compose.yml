@@ -1,4 +1,5 @@
 services:
+  # PostgreSQL Database
   db:
     image: postgres:17
     container_name: django_db
@@ -17,6 +18,8 @@ services:
       retries: 5
     restart: always
 
+
+  # Django Web Application
   web:
     build:
       context: .
@@ -26,26 +29,21 @@ services:
         USER_GID: 1000
         APP_PORT: ${APP_PORT:-8000}
     container_name: django_web
-    environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DEBUG: ${DEBUG}
-      DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
-      APP_PORT: ${APP_PORT}
-      DATABASE_HOST: db
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USER: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+    env_file:
+      - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "${APP_PORT:-8000}:${APP_PORT:-8000}"
     volumes:
       - .:/app
-      - ./staticfiles:/app/staticfiles
+      - ./static:/app/static
+      - ./sent_emails:/app/sent_emails
       - ./media:/app/media
       - ./logs:/app/logs
     restart: always
+
 
 volumes:
   db_data:

@@ -23,8 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Secret key for cryptographic signing (use a .env variable for production)
 SECRET_KEY = config('DJANGO_SECRET_KEY', 'fallback-secret-key')  # Fallback secret key for safety
-DEBUG = False  # Default to False, can be overridden in development/production
-# run with set DJANGO_ENV=dev
+DEBUG = config('DEBUG', default=False, cast=bool)
+DJANGO_ENV = config('DJANGO_ENV', default='prod')
 
 
 # from env
@@ -147,6 +147,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Clickjacking protection
 ]
 
+
+# Extra Installed Apps and Middleware can be added in dev.py or prod.py
+if DEBUG:
+    INSTALLED_APPS += [
+        'debug_toolbar',  # Django Debug Toolbar for development
+    ]
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+
 # ----------- URL CONFIGURATION -----------
 
 ROOT_URLCONF = 'config.urls'
@@ -209,6 +217,7 @@ LOG_DIR = BASE_DIR / 'logs'
 os.makedirs(LOG_DIR, exist_ok=True)  # Create logs directory if not exists
 
 # ----------- DATABASE SETTINGS -----------
+{}
 
 # Database settings can be added here (default is SQLite)
 
