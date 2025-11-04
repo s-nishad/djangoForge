@@ -87,4 +87,8 @@ EXPOSE ${APP_PORT}
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Default command: use Gunicorn (WSGI). Change CMD for Daphne if needed.
-CMD ["gunicorn", "--bind", "0.0.0.0", "-p", "$APP_PORT", "--workers", "3", "config.wsgi:application"]
+# CMD sh -c "daphne -b 0.0.0.0 -p ${APP_PORT:-8000} hr_tech.asgi:application"
+# CMD sh -c "gunicorn --bind 0.0.0.0 -p ${APP_PORT:-8000} --workers 3 config.wsgi:application"
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "config.wsgi:application"]
+
+

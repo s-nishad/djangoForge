@@ -10,7 +10,7 @@ from .settings import *  # Import all settings from the base settings file
 DEBUG = True
 
 # debug tootbar
-if DEBUG:
+if DEBUG and 'debug_toolbar' not in INSTALLED_APPS:
     INSTALLED_APPS += ['debug_toolbar']
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware'] 
 
@@ -21,14 +21,25 @@ INTERNAL_IPS = [
 
 
 # ----------- DATABASE SETTINGS -----------
+# Use PostgreSQL for production database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': config('DATABASE_ENGINE', 'django.db.backends.postgresql'),  # PostgreSQL database engine
+#         'NAME': config('DATABASE_NAME', 'mydatabase'),  # Database name (from environment variable)
+#         'USER': config('DATABASE_USERNAME', 'myuser'),  # Database user (from environment variable)
+#         'PASSWORD': config('DATABASE_PASSWORD', 'mypassword'),  # Database password (from environment variable)
+#         'HOST': config('DATABASE_HOST', 'localhost'),  # Database host (from environment variable)
+#         'PORT': config('DATABASE_PORT', '5432'),  # Database port (default: 5432)
+#     }
+# }
 
 # Use SQLite for the development database (this is the default)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # SQLite backend
-        'NAME': BASE_DIR / 'db.sqlite3',  # Path to the SQLite database file
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',  # SQLite backend
+#         'NAME': BASE_DIR / 'db.sqlite3',  # Path to the SQLite database file
+#     }
+# }
 
 # ----------- LOGGING SETTINGS -----------
 

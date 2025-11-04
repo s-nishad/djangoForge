@@ -34,3 +34,4 @@ python-decouple==3.8
 redis==7.0.1
 django-celery-results==2.6.0
 django-celery-beat==2.8.1
+django-redis==6.0.0

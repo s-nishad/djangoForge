@@ -22,6 +22,23 @@ wait_for_db() {
     echo "✅ Database is ready!"
 }
 
+
+create_test_superuser() {
+    # ✅ Comment this block in production
+    if [ "$CREATE_TEST_SUPERUSER" = "True" ]; then
+        echo "👤 Creating test superuser..."
+        python manage.py shell -c "
+from django.contrib.auth import get_user_model;
+User = get_user_model();
+if not User.objects.filter(email='admin@example.com').exists():
+    User.objects.create_superuser(
+    email='admin@example.com',
+    password='admin123'
+);
+print('✅ Test superuser created (admin/admin123)')"
+    fi
+}
+
 # Only run setup for Gunicorn/Daphne
 if [ "$1" = "gunicorn" ] || [ "$1" = "daphne" ]; then
     echo "------------------------------------------"
@@ -37,6 +54,9 @@ if [ "$1" = "gunicorn" ] || [ "$1" = "daphne" ]; then
 
     echo "📦 Applying migrations..."
     python manage.py migrate --noinput
+
+    # test account
+    create_test_superuser 
 
     if [ "$DEBUG" != "True" ]; then
         echo "📁 Collecting static files..."

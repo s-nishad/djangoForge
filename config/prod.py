@@ -14,24 +14,24 @@ DEBUG = False
 # ----------- DATABASE SETTINGS -----------
 
 # Use PostgreSQL for production database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',  # PostgreSQL database engine
-#         'NAME': config('DATABASE_NAME', 'mydatabase'),  # Database name (from environment variable)
-#         'USER': config('DATABASE_USERNAME', 'myuser'),  # Database user (from environment variable)
-#         'PASSWORD': config('DATABASE_PASSWORD', 'mypassword'),  # Database password (from environment variable)
-#         'HOST': config('DATABASE_HOST', 'localhost'),  # Database host (from environment variable)
-#         'PORT': config('DATABASE_PORT', '5432'),  # Database port (default: 5432)
-#     }
-# }
-
-# Sqllte 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # SQLite backend
-        'NAME': BASE_DIR / 'db.sqlite3',  # Path to the SQLite database file
+        'ENGINE': 'django.db.backends.postgresql',  # PostgreSQL database engine
+        'NAME': config('DATABASE_NAME', 'mydatabase'),  # Database name (from environment variable)
+        'USER': config('DATABASE_USERNAME', 'myuser'),  # Database user (from environment variable)
+        'PASSWORD': config('DATABASE_PASSWORD', 'mypassword'),  # Database password (from environment variable)
+        'HOST': config('DATABASE_HOST', 'localhost'),  # Database host (from environment variable)
+        'PORT': config('DATABASE_PORT', '5432'),  # Database port (default: 5432)
     }
 }
+
+# Sqllte 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',  # SQLite backend
+#         'NAME': BASE_DIR / 'db.sqlite3',  # Path to the SQLite database file
+#     }
+# }
 
 
 # ----------- STATIC FILES -----------
