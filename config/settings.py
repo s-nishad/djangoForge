@@ -67,6 +67,7 @@ INSTALLED_APPS += [
 INSTALLED_APPS += [
     'apps.auth_app',  # Custom authentication app
     'apps.core',  # Core application
+    'apps.contextiq',  # ContextIQ application
 ]
 
 # Custom user model
@@ -221,59 +222,67 @@ os.makedirs(LOG_DIR, exist_ok=True)  # Create logs directory if not exists
 # ----------- DATABASE SETTINGS -----------
 
 # Database settings can be added here (default is SQLite)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': config('DATABASE_ENGINE', 'django.db.backends.postgresql'),  # PostgreSQL database engine
+#         'NAME': config('DATABASE_NAME', 'mydatabase'),  # Database name (from environment variable)
+#         'USER': config('DATABASE_USERNAME', 'myuser'),  # Database user (from environment variable)
+#         'PASSWORD': config('DATABASE_PASSWORD', 'mypassword'),  # Database password (from environment variable)
+#         'HOST': config('DATABASE_HOST', 'localhost'),  # Database host (from environment variable)
+#         'PORT': config('DATABASE_PORT', '5432'),  # Database port (default: 5432)
+#     }
+# }
+
+# Use SQLite for the development database (this is the default)
 DATABASES = {
     'default': {
-        'ENGINE': config('DATABASE_ENGINE', 'django.db.backends.postgresql'),  # PostgreSQL database engine
-        'NAME': config('DATABASE_NAME', 'mydatabase'),  # Database name (from environment variable)
-        'USER': config('DATABASE_USERNAME', 'myuser'),  # Database user (from environment variable)
-        'PASSWORD': config('DATABASE_PASSWORD', 'mypassword'),  # Database password (from environment variable)
-        'HOST': config('DATABASE_HOST', 'localhost'),  # Database host (from environment variable)
-        'PORT': config('DATABASE_PORT', '5432'),  # Database port (default: 5432)
+        'ENGINE': 'django.db.backends.sqlite3',  # SQLite backend
+        'NAME': BASE_DIR / 'db.sqlite3',  # Path to the SQLite database file
     }
 }
 
 # ------------------------------
 # Celery Configuration
 # ------------------------------
-CELERY_BROKER_URL = config('CELERY_BROKER_URL', 'redis://redis:6379/0')
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_PERSISTENT = True
-CELERY_RESULT_EXPIRES = 24 * 3600  # 1 day
+# CELERY_BROKER_URL = config('CELERY_BROKER_URL', 'redis://redis:6379/0')
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_RESULT_PERSISTENT = True
+# CELERY_RESULT_EXPIRES = 24 * 3600  # 1 day
 
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_SEND_SENT_EVENT = True
+# CELERY_TASK_TRACK_STARTED = True
+# CELERY_TASK_SEND_SENT_EVENT = True
 
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-CELERY_TIMEZONE = TIME_ZONE 
-CELERY_ENABLE_UTC = True
+# CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+# CELERY_TIMEZONE = TIME_ZONE 
+# CELERY_ENABLE_UTC = True
 
 # ------------------------------
 # Redis Cache Configuration
 # ------------------------------
-REDIS_HOST = config("REDIS_HOST", default="127.0.0.1")
-REDIS_PORT = config("REDIS_PORT", default=6379, cast=int)
-REDIS_DB = config("REDIS_CACHE_DB", default=1, cast=int)
-REDIS_PASSWORD = config("REDIS_PASSWORD", default=None)
+# REDIS_HOST = config("REDIS_HOST", default="127.0.0.1")
+# REDIS_PORT = config("REDIS_PORT", default=6379, cast=int)
+# REDIS_DB = config("REDIS_CACHE_DB", default=1, cast=int)
+# REDIS_PASSWORD = config("REDIS_PASSWORD", default=None)
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            **({"PASSWORD": REDIS_PASSWORD} if REDIS_PASSWORD else {}),
-        },
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             **({"PASSWORD": REDIS_PASSWORD} if REDIS_PASSWORD else {}),
+#         },
+#     }
+# }
 
 # ------------------------------
 # EventStream (if using Django EventStream)
 # ------------------------------
-EVENTSTREAM_REDIS = {
-    "host": REDIS_HOST,
-    "port": REDIS_PORT,
-    "db": config("REDIS_DB", default=0, cast=int),
-}
+# EVENTSTREAM_REDIS = {
+#     "host": REDIS_HOST,
+#     "port": REDIS_PORT,
+#     "db": config("REDIS_DB", default=0, cast=int),
+# }
 
 
 # ----------- DEFAULT AUTO FIELD -----------

@@ -47,3 +47,4 @@ htmlcov/
 # Project-specific
 logs/
 send_emails/
+db/

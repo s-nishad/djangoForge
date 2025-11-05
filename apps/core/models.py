@@ -13,8 +13,8 @@ class BlankModel(models.Model):
 class BaseModel(BlankModel):
     id = models.CharField(max_length=255, default=uuid_factory, editable=False, primary_key=True)
 
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     is_active = models.BooleanField(default=False)
 

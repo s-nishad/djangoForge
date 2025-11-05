@@ -38,7 +38,8 @@ urlpatterns += [
     path('api/v1/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     # Include start from here...
-    path("", root, name="root")
+    path("", root, name="root"),
+    path('api/v1/contextiq/', include('apps.contextiq.urls')),
 ]
 
 from decouple import config

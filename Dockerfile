@@ -1,7 +1,7 @@
 # =========================
 # Stage 1: Build dependencies
 # =========================
-FROM python:3.13-slim AS builder
+FROM python:3.12-slim AS builder
 
 # Optimize Python environment
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -36,7 +36,7 @@ RUN pip install --no-cache-dir daphne
 # =========================
 # Stage 2: Production image
 # =========================
-FROM python:3.13-slim
+FROM python:3.12-slim
 
 # Runtime dependencies
 RUN apt-get update && \
@@ -61,7 +61,7 @@ RUN groupadd -r appuser -g ${USER_GID} && useradd -r -u ${USER_UID} -g appuser a
 WORKDIR /app
 
 # Copy Python dependencies from builder stage
-COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 # Copy application source code
