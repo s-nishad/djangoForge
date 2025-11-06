@@ -2,9 +2,10 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from .models import Document, ParsingStatus, queryLog
-from .serializers import DocumentSerializer
+from .models import Document, ParsingStatus, QueryLog, QueryLog
+from .serializers import DocumentSerializer, QueryLogSerializer
 from rest_framework.views import APIView
+from rest_framework import generics, permissions
 from django.shortcuts import get_object_or_404
 from .utils import parse_document
 from .vector_db import save_to_vector_db, query_vector_db
@@ -120,10 +121,15 @@ class DocumentQueryAPIView(APIView):
             if not combined_context:
                 combined_context = (doc.parse_content[:5000] + "...") if doc.parse_content else "No relevant content found for your query."
 
-            query_log = queryLog.objects.create(
+            query_log = QueryLog.objects.create(
                 user=request.user,
+                document=doc,
                 query_text=query,
-                response_text=combined_context
+                response_text=combined_context,
+                metadata={
+                    "source": "vector_db",
+                    "num_chunks": len(relevant_chunks),
+                }
             )
 
             # combined_context = generate_answer(combined_context, query)
@@ -139,3 +145,22 @@ class DocumentQueryAPIView(APIView):
             return Response({"context": combined_context}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class DocumentQueryHistoryAPIView(generics.ListAPIView):
+    """
+    Returns chat history for a given document for the logged-in user.
+    """
+    serializer_class = QueryLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    lookup_field = "document_id"
+
+    def get_queryset(self):
+        document_id = self.request.query_params.get("document_id")
+        document = get_object_or_404(Document, id=document_id, user=self.request.user)
+        if not document_id:
+            return QueryLog.objects.none()
+        return QueryLog.objects.filter(
+            user=self.request.user,
+            document=document
+        ).order_by("created_at")  # chronological order

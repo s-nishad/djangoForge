@@ -39,10 +39,12 @@ class Document(BaseModel):
         return self.title or f"Document #{self.id}"
 
 
-class queryLog(BaseModel):
+class QueryLog(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    document=models.ForeignKey(Document, on_delete=models.CASCADE)
     query_text = models.TextField()
     response_text = models.TextField()
+    metadata = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return f"QueryLog #{self.id} by {self.user.email}"

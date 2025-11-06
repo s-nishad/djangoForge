@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Document, queryLog
+from .models import Document, QueryLog
 
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,3 +32,9 @@ class DocumentSerializer(serializers.ModelSerializer):
         document.user = user
         document.save()
         return document
+    
+
+class QueryLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QueryLog
+        fields = ['id', 'query_text', 'response_text', 'metadata', 'created_at', 'updated_at']

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Document, queryLog
+from .models import Document, QueryLog
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
@@ -10,7 +10,7 @@ class DocumentAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
 
 
-@admin.register(queryLog)
+@admin.register(QueryLog)
 class QueryLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'short_query_text', 'short_response_text', 'created_at')
     list_filter = ('created_at', 'user')
