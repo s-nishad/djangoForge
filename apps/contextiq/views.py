@@ -2,59 +2,71 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from .models import Document, ParsingStatus
+from .models import Document, ParsingStatus, queryLog
 from .serializers import DocumentSerializer
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from .utils import parse_document
 from .vector_db import save_to_vector_db, query_vector_db
 
+from .summarizer import summarize_document
+from .rag_llm import generate_answer
+
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all().order_by('-created_at')
     serializer_class = DocumentSerializer
     permission_classes = [IsAuthenticated]  
 
+    def get_queryset(self):
+        return Document.objects.filter(user=self.request.user).order_by('-created_at')
+
     def perform_create(self, serializer):
-        # Don't pass user here; serializer already sets it
         document = serializer.save()
 
         try:
-            # If file uploaded → parse content
+            # Parse file or manual content
             if document.file:
                 document.parse_content_status = ParsingStatus.IN_PROGRESS
                 document.save(update_fields=['parse_content_status'])
 
                 content = parse_document(document.file.path)
-                
                 if not content.strip():
-                    raise ValueError("Parsed content is empty from the uploaded file.")
+                    raise ValueError("Parsed content is empty.")
 
-                document.parse_content = content
-                document.parse_content_status = ParsingStatus.COMPLETED
-                document.save()
-
-                save_to_vector_db(
-                    content,
-                    metadata={"document_id": document.id, "title": document.title}
-                )
-
-            # If content was provided manually
             elif document.parse_content:
+                content = document.parse_content
                 document.parse_content_status = ParsingStatus.MANUAL
-                document.save()
-                save_to_vector_db(
-                    document.parse_content,
-                    metadata={"document_id": document.id, "title": document.title}
-                )
+                document.save(update_fields=['parse_content_status'])
 
             else:
-                # This should never happen due to serializer validation
                 raise ValueError("No content provided or parsed.")
+
+            # Summarize and detect language
+            language, summary_text = summarize_document(content)
+
+            # Save parsed content, language, and summary
+            document.parse_content = content
+            document.language = language
+            document.document_summary = summary_text
+            document.parse_content_status = ParsingStatus.COMPLETED
+            document.save(update_fields=['parse_content', 'language', 'document_summary', 'parse_content_status'])
+
+            # Save to vector DB with enriched metadata
+            save_to_vector_db(
+                content,
+                metadata={
+                    "document_id": document.id,
+                    "title": document.title,
+                    "language": language,
+                    "summary": summary_text
+                }
+            )
 
         except Exception as e:
             document.parse_content_status = ParsingStatus.FAILED
             document.save(update_fields=['parse_content_status'])
             raise e
+
 
     @action(detail=False, methods=['get'])
     def query(self, request):
@@ -104,6 +116,25 @@ class DocumentQueryAPIView(APIView):
             # combine relevant chunks into a single context string
             combined_context = " ".join(relevant_chunks)
 
+            # if no relevant chunks found include full document content
+            if not combined_context:
+                combined_context = (doc.parse_content[:5000] + "...") if doc.parse_content else "No relevant content found for your query."
+
+            query_log = queryLog.objects.create(
+                user=request.user,
+                query_text=query,
+                response_text=combined_context
+            )
+
+            # combined_context = generate_answer(combined_context, query)
+
+            # Now you can call OpenAI with query + combined_context
+            # For example:
+            # answer = openai.Completion.create(
+            #     model="gpt-4",
+            #     prompt=f"Context: {combined_context}\n\nQuestion: {query}\nAnswer:",
+            #     max_tokens=500
+            # )
 
             return Response({"context": combined_context}, status=status.HTTP_200_OK)
         except Exception as e:

@@ -134,7 +134,7 @@ class UserResponseSerializer(serializers.ModelSerializer):
             'profile_picture',
             'role',
         ]
-        read_only_fields = fields
+        read_only_fields = ('id', 'email', 'role')
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

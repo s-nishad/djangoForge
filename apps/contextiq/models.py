@@ -24,6 +24,8 @@ class Document(BaseModel):
         choices=ParsingStatus.choices,
         default=ParsingStatus.PENDING
     )
+    language = models.CharField(max_length=20, blank=True, null=True)
+    document_summary = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         # Automatically set title from file name if not provided
@@ -35,3 +37,12 @@ class Document(BaseModel):
 
     def __str__(self):
         return self.title or f"Document #{self.id}"
+
+
+class queryLog(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    query_text = models.TextField()
+    response_text = models.TextField()
+
+    def __str__(self):
+        return f"QueryLog #{self.id} by {self.user.email}"
