@@ -38,7 +38,8 @@ urlpatterns += [
     path('api/v1/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     # Include start from here...
-    path("", root, name="root")
+    path("", root, name="root"),
+    path('api/v1/chat/', include('apps.chat.urls', namespace='chat')),
 ]
 
 from decouple import config

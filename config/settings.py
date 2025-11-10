@@ -65,8 +65,10 @@ INSTALLED_APPS += [
 
 # Local apps
 INSTALLED_APPS += [
+    'channels',
     'apps.auth_app',  # Custom authentication app
     'apps.core',  # Core application
+    'apps.chat',  # Chat application
 ]
 
 # Custom user model
@@ -179,7 +181,18 @@ TEMPLATES = [
 ]
 
 # WSGI application
-WSGI_APPLICATION = 'config.wsgi.application'
+# WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 
 # ----------- PASSWORD VALIDATION -----------
 
@@ -221,14 +234,22 @@ os.makedirs(LOG_DIR, exist_ok=True)  # Create logs directory if not exists
 # ----------- DATABASE SETTINGS -----------
 
 # Database settings can be added here (default is SQLite)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': config('DATABASE_ENGINE', 'django.db.backends.postgresql'),  # PostgreSQL database engine
+#         'NAME': config('DATABASE_NAME', 'mydatabase'),  # Database name (from environment variable)
+#         'USER': config('DATABASE_USERNAME', 'myuser'),  # Database user (from environment variable)
+#         'PASSWORD': config('DATABASE_PASSWORD', 'mypassword'),  # Database password (from environment variable)
+#         'HOST': config('DATABASE_HOST', 'localhost'),  # Database host (from environment variable)
+#         'PORT': config('DATABASE_PORT', '5432'),  # Database port (default: 5432)
+#     }
+# }
+
+# Use SQLite for the development database (this is the default)
 DATABASES = {
     'default': {
-        'ENGINE': config('DATABASE_ENGINE', 'django.db.backends.postgresql'),  # PostgreSQL database engine
-        'NAME': config('DATABASE_NAME', 'mydatabase'),  # Database name (from environment variable)
-        'USER': config('DATABASE_USERNAME', 'myuser'),  # Database user (from environment variable)
-        'PASSWORD': config('DATABASE_PASSWORD', 'mypassword'),  # Database password (from environment variable)
-        'HOST': config('DATABASE_HOST', 'localhost'),  # Database host (from environment variable)
-        'PORT': config('DATABASE_PORT', '5432'),  # Database port (default: 5432)
+        'ENGINE': 'django.db.backends.sqlite3',  # SQLite backend
+        'NAME': BASE_DIR / 'db.sqlite3',  # Path to the SQLite database file
     }
 }
 

@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             name='ApiKey',
             fields=[
                 ('id', models.CharField(default=apps.core.utils.defaults.uuid_factory, editable=False, max_length=255, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
                 ('is_active', models.BooleanField(default=False)),
                 ('host', models.URLField(blank=True, null=True)),
                 ('service_name', models.CharField(max_length=100)),

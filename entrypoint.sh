@@ -35,7 +35,7 @@ if not User.objects.filter(email='admin@example.com').exists():
     email='admin@example.com',
     password='admin123'
 );
-print('✅ Test superuser created (admin/admin123)')"
+print('✅ Test superuser created_at (admin/admin123)')"
     fi
 }
 
