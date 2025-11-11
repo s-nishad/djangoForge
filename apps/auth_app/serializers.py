@@ -134,10 +134,19 @@ class UserResponseSerializer(serializers.ModelSerializer):
             'profile_picture',
             'role',
         ]
-        read_only_fields = fields
+        read_only_fields = ('id', 'email', 'role')
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if not getattr(settings, 'USE_ROLE', False):
             data.pop('role', None)
         return data
+    
+
+# ---------------------
+# User Serializer for listing users 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'name', 'profile_picture']
+        read_only_fields = ['id', 'email', 'name', 'profile_picture']

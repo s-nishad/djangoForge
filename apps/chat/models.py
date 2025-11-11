@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -29,8 +30,13 @@ class Message(models.Model):
     id = models.UUIDField(max_length=255, primary_key=True, default=uuid_factory, editable=False)
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
+    content = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to='chat_files/', blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.sender} -> {self.content[:20]}"
+        return f"{self.sender} -> {self.content[:20] if self.content else ''}"
+
+    def clean(self):
+        if not self.content and not self.file:
+            raise ValidationError("Either content or file must be provided.")

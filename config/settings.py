@@ -28,7 +28,9 @@ DJANGO_ENV = config('DJANGO_ENV', default='prod')
 
 
 # from env
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', 'localhost').split(',')
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = ['*']
+
 INTERNAL_IPS = config('INTERNAL_IPS', '127.0.0.1').split(',')
 # ----------- CORS SETTINGS -----------
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
@@ -82,7 +84,7 @@ USE_ROLE = False
 # Allow specific headers in CORS requests
 CORS_ALLOW_HEADERS = [
     "accept", "accept-encoding", "authorization", "content-type", "dnt", 
-    "origin", "user-agent", "x-csrftoken", "x-requested-with"
+    "origin", "user-agent", "x-csrftoken", "x-requested-with", "ngrok-skip-browser-warning"
 ]
 
 # Allow credentials in CORS requests

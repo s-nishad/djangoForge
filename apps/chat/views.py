@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from .models import ChatRoom, Message
 from .serializers import ChatRoomSerializer, MessageSerializer
 from rest_framework.exceptions import ValidationError
+from rest_framework.parsers import MultiPartParser, FormParser
 
 User = get_user_model()
 
@@ -34,6 +35,7 @@ class ChatRoomListCreateAPIView(generics.ListCreateAPIView):
 class MessageListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         room_id = self.kwargs.get("room_id")
